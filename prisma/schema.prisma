@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String   @unique
+  password String
+
+  imobis   Imobi[]
+  messages Messages[]  
+
+  @@map("users")
+}
+
+model Imobi {
+  id         Int       @id @default(autoincrement())
+  tipo       String?
+  thumb      String?
+  endereco   String?
+  cidade     String?
+  uf         String?
+  valor      Decimal?  @db.Decimal(10,2)
+  descricao  String?   @db.VarChar(255)
+  name       String
+  email      String
+  telefone   String
+  slug       String
+  userId     Int
+  created_at DateTime  @default(now())
+
+  author     User      @relation(fields: [userId], references: [id])
+
+  @@map("imoveis")
+}
+
+model Messages {
+  id              Int    @id @default(autoincrement())
+  client_name     String
+  client_email    String
+  client_mensagem String
+  userId          Int
+  author          User   @relation(fields: [userId], references: [id])
+
+  @@map("messages")
+}
